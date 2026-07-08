@@ -64,6 +64,7 @@ const state = {
   learning: null,
   practice: null,
   timer: null,
+  visualProgress: {},
 };
 
 init();
@@ -132,7 +133,7 @@ function renderHome() {
           </div>
         </div>
         <div class="progress-row"><span>学习进度</span><span>${percent}%</span></div>
-        <div class="progress-track"><div class="progress-fill" style="--progress:${percent}%"></div></div>
+        ${progressBar("home", percent)}
       </section>
 
       <section class="mode-list">
@@ -271,7 +272,7 @@ function renderPractice() {
               return `<button class="option-button ${optionClass} ${isCorrect ? "correct" : ""} ${isWrong ? "wrong" : ""}" data-action="answer" data-answer="${escapeAttr(choice)}" ${session.locked || hasFeedback ? "disabled" : ""}>${escapeHtml(choice)}</button>`;
             }).join("")}
           </div>
-          <div class="progress-track"><div class="progress-fill" style="--progress:${Math.round((session.index / session.group.length) * 100)}%"></div></div>
+          ${progressBar("practice", Math.round((session.index / session.group.length) * 100))}
           <button class="secondary-button" data-action="skip-question" ${session.locked || hasFeedback ? "disabled" : ""}>还没学会</button>
         </div>
       </div>
@@ -299,7 +300,7 @@ function renderStats() {
       <div class="stats-row"><span>总汉字</span><strong>${all.length}</strong></div>
       <div class="stats-row"><span>已掌握</span><strong>${mastered}</strong></div>
       <div class="stats-row"><span>已练习</span><strong>${practiced}</strong></div>
-      <div class="progress-track"><div class="progress-fill" style="--progress:${all.length ? Math.round((mastered / all.length) * 100) : 0}%"></div></div>
+      ${progressBar("stats", all.length ? Math.round((mastered / all.length) * 100) : 0)}
     </section>
     ${lessons().map((lesson) => {
       const chars = charsByLesson(lesson);
@@ -497,6 +498,13 @@ function settingsButton(icon, title, route) {
 
 function option(value, selected) {
   return `<option value="${escapeAttr(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value)}</option>`;
+}
+
+function progressBar(id, percent) {
+  const current = Math.max(0, Math.min(100, percent));
+  const previous = state.visualProgress[id] ?? current;
+  state.visualProgress[id] = current;
+  return `<div class="progress-track"><div class="progress-fill" style="--progress-start:${previous}%;--progress:${current}%"></div></div>`;
 }
 
 function navTo(name, params = {}) {
