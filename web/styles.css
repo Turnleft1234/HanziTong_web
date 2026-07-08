@@ -214,6 +214,7 @@ button {
   background: linear-gradient(90deg, #39b86d, #9ed85c);
   transform: translateY(-50%);
   box-shadow: 0 0 12px rgba(57, 184, 109, 0.28);
+  animation: plane-progress 680ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
 }
 
 .progress-fill::before {
@@ -250,6 +251,35 @@ button {
   line-height: 1;
   text-shadow: 0 3px 8px rgba(32, 54, 88, 0.18);
   transform: translateY(-58%) rotate(12deg);
+  animation: plane-bob 680ms ease-in-out both;
+}
+
+@keyframes plane-progress {
+  from {
+    width: var(--progress-start, 0%);
+  }
+  to {
+    width: var(--progress, 0%);
+  }
+}
+
+@keyframes plane-bob {
+  0% {
+    transform: translateY(-52%) rotate(8deg) scale(0.94);
+  }
+  45% {
+    transform: translateY(-72%) rotate(14deg) scale(1.08);
+  }
+  100% {
+    transform: translateY(-58%) rotate(12deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill,
+  .progress-fill::after {
+    animation: none;
+  }
 }
 
 .mode-list {
